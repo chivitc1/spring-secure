@@ -1,6 +1,6 @@
 package com.example.demo.configurations;
 
-import com.example.demo.models.Role;
+import com.example.demo.models.SystemRoleType;
 import com.example.demo.models.User;
 import com.example.demo.services.UserService;
 import org.springframework.security.core.GrantedAuthority;
@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class CustomUserDetailsService implements UserDetailsService {
     private final UserService userService;
@@ -27,15 +28,13 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private final class CustomUserDetails extends User implements UserDetails {
-        private Set<Role> roles;
+        private Set<SystemRoleType> roles;
 
         CustomUserDetails(User user) {
             setId(user.getId());
             setEmail(user.getEmail());
-            setFirstName(user.getFirstName());
-            setLastName(user.getLastName());
             setPassword(user.getPassword());
-            setRoles(user.getRoles());
+            setRoles(user.getRoles().stream().map(it -> it.name()).collect(Collectors.toSet()));
         }
 
         @Override

@@ -1,5 +1,6 @@
 package com.example.demo.web.model;
 
+import com.example.demo.models.SystemRoleType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,5 +15,5 @@ public class NewUserForm {
     private String password;
     private String firstName;
     private String lastName;
-    private Set<String> roles = new HashSet<>();
+    private Set<SystemRoleType> roles = new HashSet<>();
 }

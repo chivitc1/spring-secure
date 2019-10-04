@@ -1,5 +1,6 @@
 package com.example.demo.web.model;
 
+import com.example.demo.models.SystemRoleType;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -9,7 +10,5 @@ import java.util.Set;
 public class UserResponse {
     private Integer id;
     private String username;
-    private String firstName;
-    private String lastName;
-    private Set<String> roles;
+    private Set<SystemRoleType> roles;
 }
