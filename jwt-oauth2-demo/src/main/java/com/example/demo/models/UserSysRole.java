@@ -44,9 +44,6 @@ public class UserSysRole implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.user.getId(),
-                role
-//                SystemRoleType.valueOf(role).hashCode()
-        );
+        return Objects.hash(this.user.getId(),role);
     }
 }

@@ -20,7 +20,7 @@ public class User implements Principal {
     private String email;
     private String password;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
     private Set<UserSysRole> roles = new HashSet<>();
 
     public Set<SystemRoleType> getRoles() {
