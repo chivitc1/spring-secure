@@ -34,7 +34,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             setId(user.getId());
             setEmail(user.getEmail());
             setPassword(user.getPassword());
-            setRoles(user.getRoles().stream().map(it -> it.name()).collect(Collectors.toSet()));
+            setRoles(user.getRoles());
         }
 
         @Override

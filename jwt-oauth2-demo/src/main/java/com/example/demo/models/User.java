@@ -20,12 +20,15 @@ public class User implements Principal {
     private String email;
     private String password;
 
-    @ElementCollection(targetClass = String.class)
-    @CollectionTable(name = "user_roles")
-    private Set<String> roles = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user")
+    private Set<UserSysRole> roles = new HashSet<>();
 
     public Set<SystemRoleType> getRoles() {
-        return roles.stream().map(it -> SystemRoleType.valueOf(it)).collect(Collectors.toSet());
+        return roles.stream().map(it -> it.getRole()).collect(Collectors.toSet());
+    }
+
+    public void setRoles(Set<SystemRoleType> roles) {
+        this.roles.addAll(roles.stream().map(it -> new UserSysRole(this, it)).collect(Collectors.toSet()));
     }
 
     @OneToMany(mappedBy = "user")
@@ -45,16 +48,17 @@ public class User implements Principal {
     }
 
     public void addRole(SystemRoleType role) {
-        this.roles.add(role.name());
+        UserSysRole sysRole = new UserSysRole(this, role);
+        this.roles.add(sysRole);
     }
 
     public void addRoles(Set<SystemRoleType> roles) {
-        this.roles.addAll(roles.stream().map(it -> it.name()).collect(Collectors.toSet()));
+        this.roles.addAll(roles.stream().map(it -> new UserSysRole(this, it)).collect(Collectors.toSet()));
     }
 
     public void removeRoles(Set<SystemRoleType> roles) {
         for (SystemRoleType role : roles) {
-            this.roles.remove(role.name());
+            this.roles.remove(new UserSysRole(this, role));
         }
     }
 

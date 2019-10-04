@@ -1,11 +1,9 @@
 package com.example.demo;
 
-import com.example.demo.models.SystemRoleType;
-import com.example.demo.models.Team;
-import com.example.demo.models.TeamRoleType;
-import com.example.demo.models.User;
+import com.example.demo.models.*;
 import com.example.demo.repositories.TeamRepository;
 import com.example.demo.repositories.UserRepository;
+import com.example.demo.services.UpdateUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +20,9 @@ public class DataInitializer {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UpdateUserService userService;
 
     private static final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -44,13 +45,24 @@ public class DataInitializer {
 
         // grant role to user
         user1.addRole(SystemRoleType.ROLE_USER);
+        UserSysRole userSysRole = new UserSysRole();
+        userSysRole.setUser(user1);
+        userSysRole.setRole(SystemRoleType.ROLE_USER.name());
         userRepository.save(user1);
 
         // add more roles
-        Set<SystemRoleType> systemRoles = new HashSet<>();
-        systemRoles.add(SystemRoleType.ROLE_SYSTEM);
-        systemRoles.add(SystemRoleType.ROLE_SYSTEM_ADMIN);
-        user1.addRoles(systemRoles);
-        userRepository.save(user1);
+        Set<SystemRoleType> roles = new HashSet<>();
+        roles.add(SystemRoleType.ROLE_SYSTEM);
+        roles.add(SystemRoleType.ROLE_SYSTEM_ADMIN);
+        userService.addSystemRoles(user1.getId(), roles);
+
+        Set<SystemRoleType> roles2 = new HashSet<>();
+        roles2.add(SystemRoleType.ROLE_USER);
+        userService.addSystemRoles(user1.getId(), roles2);
+
+        // remove role
+        Set<SystemRoleType> roles3 = new HashSet<>();
+        roles3.add(SystemRoleType.ROLE_SYSTEM);
+        userService.removeSystemRoles(user1.getId(), roles3);
     }
 }
