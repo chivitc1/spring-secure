@@ -10,15 +10,22 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "users")
-@Getter @Setter
+@Getter
+@Setter
 public class User implements Principal {
     @Id
-    @SequenceGenerator(name="users_generator",sequenceName="users_seq",allocationSize=1, initialValue = 1)
+    @SequenceGenerator(name = "users_generator", sequenceName = "users_seq", allocationSize = 1, initialValue = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_generator")
     private Integer id;
 
     private String email;
     private String password;
+
+    private Integer rectrictFieldOwner = 0;     // only owner & sysadm can do
+    private Integer rectrictFieldSysadm = 0;    // only sysadm can do
+    private Integer rectrictFieldMentor = 0; //user which is mentor of the user can do
+    private Integer rectrictFieldTeamLeader = 0; // Team leader, team admin and sysadm can do
+    private Integer rectrictFieldTeamAdmin = 0; // Team admin and sysadm can do
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "user", orphanRemoval = true)
     private Set<UserSysRole> roles = new HashSet<>();
@@ -35,16 +42,17 @@ public class User implements Principal {
     private List<TeamUser> teams = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="supervisor_id")
-    private User supervisor;
+    @JoinColumn(name = "mentor_id")
+    private User mentor;
 
     @Override
     public String getName() {
         return getEmail();
     }
 
+
     public Optional<User> getUser() {
-        return Optional.ofNullable(this.supervisor);
+        return Optional.ofNullable(this.mentor);
     }
 
     public void addRole(SystemRoleType role) {
@@ -60,6 +68,13 @@ public class User implements Principal {
         for (SystemRoleType role : roles) {
             this.roles.remove(new UserSysRole(this, role));
         }
+    }
+
+    public static User addNewUser(String email, String encodedPassword) {
+        User user = new User();
+        user.setEmail(email);
+        user.setPassword(encodedPassword);
+        return user;
     }
 
     @Override

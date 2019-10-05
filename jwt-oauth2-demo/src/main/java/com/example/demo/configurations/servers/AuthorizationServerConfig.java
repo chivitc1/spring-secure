@@ -1,7 +1,10 @@
 package com.example.demo.configurations;
 
+import com.example.demo.repositories.OAuth2ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -9,6 +12,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.A
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.OAuth2RequestFactory;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
@@ -30,6 +34,18 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
     @Autowired
     private JwtAccessTokenConverter jwtAccessTokenConverter;
 
+    @Autowired
+    private OAuth2ClientRepository clientRepository;
+
+    @Bean(name = "clientDetailsServicePrimary")
+    @Primary
+    public ClientDetailsService clientDetailsService() {
+        return new CustomClientDetailsService(clientRepository);
+    }
+
+//    @Autowired
+//    private ClientDetailsService clientDetailsService;
+
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
@@ -38,23 +54,26 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
                 .authenticationManager(authenticationManager)
                 .userDetailsService(userDetailsService)
                 .pathMapping("/oauth/token", "/auth/oauth/token");
+//        endpoints.setClientDetailsService(clientDetailsService);
         oAuth2RequestFactory = endpoints.getOAuth2RequestFactory();
     }
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 
-        clients.inMemory()
-                .withClient("webAppClient")
-                .secret("$2a$10$d37BpcDJvTr2G0ehFEvg.OtW9Omavhf12T6d50iCSbm2NdIlpo2Uq")
-                .authorizedGrantTypes("refresh_token", "password", "client_credentials")
-                .scopes("webClient", "mobileClient");
+//        clients.inMemory()
+//                .withClient("webAppClient")
+//                .secret("$2a$10$d37BpcDJvTr2G0ehFEvg.OtW9Omavhf12T6d50iCSbm2NdIlpo2Uq")
+//                .authorizedGrantTypes("refresh_token", "password", "client_credentials")
+//                .scopes("webClient", "mobileClient");
+        clients.withClientDetails(clientDetailsService());
     }
 
     @Override
     public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
         super.configure(security);
-        security.allowFormAuthenticationForClients();
-//            .addTokenEndpointAuthenticationFilter(new CustomTokenEndpointAuthenticationFilter(authenticationManager, oAuth2RequestFactory));
+        security.allowFormAuthenticationForClients()
+//            .addTokenEndpointAuthenticationFilter(new CustomTokenEndpointAuthenticationFilter(authenticationManager, oAuth2RequestFactory))
+        ;
     }
 }
