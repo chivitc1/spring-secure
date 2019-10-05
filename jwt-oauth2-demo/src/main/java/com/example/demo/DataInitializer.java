@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import com.example.demo.models.*;
-import com.example.demo.repositories.OAuth2ClientRepository;
 import com.example.demo.repositories.TeamRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.services.UpdateUserService;
@@ -16,8 +15,6 @@ import java.util.*;
 @Component
 public class DataInitializer {
 
-    @Autowired
-    private OAuth2ClientRepository clientRepository;
     @Autowired
     private TeamRepository teamRepository;
 
@@ -58,6 +55,10 @@ public class DataInitializer {
         teamA.addUser(leader2, TeamRoleType.LEADER);
         teamA.addUser(admin1, TeamRoleType.ADMIN);
         teamRepository.save(teamA);
+        users.get(0).setMentor(leader1);
+        users.get(1).setMentor(leader1);
+        users.get(2).setMentor(leader1);
+        userRepository.saveAll(Arrays.asList(users.get(0), users.get(1), users.get(2)));
 
         // Setup teamB
         User user1B = User.addNewUser("user1b@example.com", passwordEncoder.encode("123456"));
@@ -71,7 +72,7 @@ public class DataInitializer {
 
         // create test user
         User testUser = new User();
-        testUser.setEmail("testuser@example.com");
+        testUser.setEmail("sysadm@example.com");
         testUser.setPassword(passwordEncoder.encode("123456"));
         userRepository.save(testUser);
 
@@ -108,8 +109,15 @@ public class DataInitializer {
         }
         userRepository.saveAll(unsetRoleUsers);
 
-        // add oauth2 clients
-        OAuth2Client client1 = new OAuth2Client(passwordEncoder.encode("123456"));
-        clientRepository.save(client1);
+        //update mentors
+//        User userNeedMentor1 = userRepository.getOne(1);
+//        User mentor = userRepository.findByEmail("leader1@example.com").orElseThrow(() -> new RuntimeException("NOT FOUND"));
+//        userNeedMentor1.setMentor(mentor);
+//
+//        User userNeedMentor2 = userRepository.getOne(2);
+//        userNeedMentor2.setMentor(mentor);
+//
+//        userRepository.save(userNeedMentor1);
+//        userRepository.save(userNeedMentor2);
     }
 }

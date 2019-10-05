@@ -41,7 +41,7 @@ public class User implements Principal {
     @OneToMany(mappedBy = "user")
     private List<TeamUser> teams = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "mentor_id")
     private User mentor;
 
