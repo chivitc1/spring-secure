@@ -4,10 +4,7 @@ import com.example.demo.services.UserBizUpdateService;
 import com.example.demo.web.model.EarnValueForm;
 import com.example.demo.web.model.EarnValueResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/biz/users")
@@ -15,9 +12,33 @@ public class UserBizUpdateController {
     @Autowired
     private UserBizUpdateService updateService;
 
-    @PatchMapping("/ownerfield")
-    public EarnValueResponse update(@RequestBody EarnValueForm earnValueForm) {
-        Integer earnVal = updateService.updateRectrictFieldOwner(earnValueForm.getEarnValue());
+    @PatchMapping("/{userId}/ownerfield")
+    public EarnValueResponse updateOwnerfield(@PathVariable("userId") Integer userId, @RequestBody EarnValueForm earnValueForm) {
+        Integer earnVal = updateService.updateRectrictFieldOwner(userId, earnValueForm.getEarnValue());
+        return new EarnValueResponse(earnVal);
+    }
+
+    @PatchMapping("/{userId}/sysadminfield")
+    public EarnValueResponse updateSysadminfield(@PathVariable("userId") Integer userId, @RequestBody EarnValueForm earnValueForm) {
+        Integer earnVal = updateService.updateRectrictFieldSysadm(userId, earnValueForm.getEarnValue());
+        return new EarnValueResponse(earnVal);
+    }
+
+    @PatchMapping("/{userId}/teamadminfield")
+    public EarnValueResponse updateTeamadminfield(@PathVariable("userId") Integer userId, @RequestBody EarnValueForm earnValueForm) {
+        Integer earnVal = updateService.updateRectrictFieldTeamAdmin(userId, earnValueForm.getEarnValue());
+        return new EarnValueResponse(earnVal);
+    }
+
+    @PatchMapping("/{userId}/teamleaderfield")
+    public EarnValueResponse updateTeamleaderfield(@PathVariable("userId") Integer userId, @RequestBody EarnValueForm earnValueForm) {
+        Integer earnVal = updateService.updateRectrictFieldTeamLeader(userId, earnValueForm.getEarnValue());
+        return new EarnValueResponse(earnVal);
+    }
+
+    @PatchMapping("/{userId}/metorfield")
+    public EarnValueResponse updateMentorfield(@PathVariable("userId") Integer userId, @RequestBody EarnValueForm earnValueForm) {
+        Integer earnVal = updateService.updateRectrictFieldMentor(userId, earnValueForm.getEarnValue());
         return new EarnValueResponse(earnVal);
     }
 }
